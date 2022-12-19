@@ -1,0 +1,80 @@
+
+
+
+//Filter the Landsat 5 image collection to the region and date of interest
+var img = ee.ImageCollection(L8)
+                  .filterBounds(Sangaredi)
+                  .filterDate('2022-01-01', '2022-12-31')
+                  .filterMetadata('CLOUD_COVER', 'less_than', 2);
+
+print(img)
+
+var img2 = ee.ImageCollection(L8)
+                  .filterBounds(Tougue)
+                  .filterDate('2022-01-01', '2022-12-31')
+                  .filterMetadata('CLOUD_COVER', 'less_than', 2);
+
+map.addLayer(table)
+
+var viz = {
+  bands: ['B4', 'B3', 'B2'],
+  min: 0.0,
+  max: 0.3,
+};
+
+var displayImage = function(imageCollection,imageIndex,visParams,layerName){
+  var imageCollection_list = imageCollection.toList(imageCollection.size());
+  var scene = ee.Image(imageCollection_list.get(imageIndex));
+  Map.addLayer(scene,visParams,layerName);
+  return(true);
+}
+
+displayImage(img,2,viz,'FCC')
+
+var displayImage2 = function(imageCollection,imageIndex,visParams,layerName){
+  var imageCollection_list = imageCollection.toList(imageCollection.size());
+  var scene = ee.Image(imageCollection_list.get(imageIndex));
+  Map.addLayer(scene,visParams,layerName);
+  return(true);
+}
+
+displayImage2(img2,2,viz,'FCC')
+
+
+/*
+// Retrieve the projection information from a band of the original image.
+// Call getInfo() on the projection to request a client-side object containing
+// the crs and transform information needed for the client-side Export function.
+
+var imageCollection_list = img.toList(img.size());
+var scene = ee.Image(imageCollection_list.get(2));
+
+
+var projection = scene.select('B2').projection().getInfo();
+
+// Export the image, specifying the CRS, transform, and region.
+Export.image.toDrive({
+  image: scene.select(["B1","B2","B3","B4","B5","B6","B7","B8","B9","B10","B11"]), 
+  description: 'BelAir_2022',
+  crs: projection.crs,
+  crsTransform: projection.transform,
+});
+
+
+//Second (Tougue) Image
+
+var imageCollection_list2 = img2.toList(img2.size());
+var scene2 = ee.Image(imageCollection_list2.get(2));
+
+
+var projection2 = scene2.select('B2').projection().getInfo();
+
+// Export the image, specifying the CRS, transform, and region.
+Export.image.toDrive({
+  image: scene2.select(["B1","B2","B3","B4","B5","B6","B7","B8","B9","B10","B11"]), 
+  description: 'BelAir_2022',
+  crs: projection2.crs,
+  crsTransform: projection2.transform,
+});
+
+*/
